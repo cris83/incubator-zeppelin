@@ -63,6 +63,7 @@ public class ZeppelinIT {
         FirefoxProfile profile = new FirefoxProfile();
         driver = new FirefoxDriver(ffox, profile);
       } catch (Exception e) {
+		  e.printStackTrace();
       }
     }
 

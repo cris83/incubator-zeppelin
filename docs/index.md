@@ -3,6 +3,19 @@ layout: page
 title: Zeppelin
 tagline: Less Development, More analysis!
 ---
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 {% include JB/setup %}
 
 <div class="row">
@@ -71,7 +84,7 @@ With simple drag and drop Zeppelin aggeregates the values and display them in pi
     <img class="img-responsive" src="./assets/themes/zeppelin/img/screenshots/pivot.png" />
   </div>
 </div>
-Learn more about Zeppelin's [Display system](./docs/display.html).
+Learn more about Zeppelin's Display system. ( [text](./docs/displaysystem/display.html), [html](./docs/displaysystem/display.html#html), [table](./docs/displaysystem/table.html), [angular](./docs/displaysystem/angular.html) )
 
 
 <br />
@@ -81,7 +94,7 @@ Zeppelin can dynamically create some input forms into your notebook.
 
 <img class="img-responsive" src="./assets/themes/zeppelin/img/screenshots/form_input.png" />
 
-Learn more about [Dynamic Forms](./docs/dynamicform.html).
+Learn more about [Dynamic Forms](./docs/manual/dynamicform.html).
 
 
 <br />

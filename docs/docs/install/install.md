@@ -4,6 +4,19 @@ title: "Install Zeppelin"
 description: ""
 group: install
 ---
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 {% include JB/setup %}
 
 
@@ -100,16 +113,6 @@ Configuration can be done by both environment variable(conf/zeppelin-env.sh) and
     <td>N/A</td>
     <td>JVM Options</td>
 </table>
-
-#### Add jars, files
-
-spark.jars, spark.files property in *ZEPPELIN\_JAVA\_OPTS* adds jars, files into SparkContext.
-for example, 
-
-    ZEPPELIN_JAVA_OPTS="-Dspark.jars=/mylib1.jar,/mylib2.jar -Dspark.files=/myfile1.dat,/myfile2.dat"
-
-or you can do it dynamically with [dependency loader](../interpreter/spark.html#dependencyloading)
-
 
 ## Start/Stop
 #### Start Zeppelin

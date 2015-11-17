@@ -4,6 +4,19 @@ title: "Notebook REST API"
 description: ""
 group: rest-api
 ---
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 {% include JB/setup %}
 
 ## Zeppelin REST API
@@ -20,8 +33,40 @@ group: rest-api
  <br />
 ### Notebook REST API list
   
-  Notebooks can be created, deleted or cloned using the following REST API
+  Notebooks REST API supports the following operations: List, Create, Delete & Clone as detailed in the following table 
   
+  <table class="table-configuration">
+    <col width="200">
+    <tr>
+      <th>List notebooks</th>
+      <th></th>
+    </tr>
+    <tr>
+      <td>Description</td>
+      <td>This ```GET``` method list the available notebooks on your server.
+          Notebook JSON contains the ```name``` and ```id``` of all notebooks.
+      </td>
+    </tr>
+    <tr>
+      <td>URL</td>
+      <td>```http://[zeppelin-server]:[zeppelin-port]/api/notebook```</td>
+    </tr>
+    <tr>
+      <td>Success code</td>
+      <td>200</td>
+    </tr>
+    <tr>
+      <td> Fail code</td>
+      <td> 500 </td>
+    </tr>
+    <tr>
+      <td> sample JSON response </td>
+      <td><pre>{"status":"OK","message":"","body":[{"name":"Homepage","id":"2AV4WUEMK"},{"name":"Zeppelin Tutorial","id":"2A94M5J1Z"}]}</pre></td>
+    </tr>
+  </table>
+  
+<br/>
+
   <table class="table-configuration">
     <col width="200">
     <tr>
@@ -48,11 +93,11 @@ group: rest-api
     </tr>
     <tr>
       <td> sample JSON input </td>
-      <td> [Create JSON sample](rest-json/rest-json-notebook-create.json)</td>
+      <td><pre>{"name": "name of new notebook"}</pre></td>
     </tr>
     <tr>
       <td> sample JSON response </td>
-      <td> [Create response sample](rest-json/rest-json-notebook-create-response.json) </td>
+      <td><pre>{"status": "CREATED","message": "","body": "2AZPHY918"}</pre></td>
     </tr>
   </table>
   
@@ -83,7 +128,7 @@ group: rest-api
     </tr>
     <tr>
       <td> sample JSON response </td>
-      <td> [Delete response sample](rest-json/rest-json-notebook-delete-response.json) </td>
+      <td><pre>{"status":"OK","message":""}</pre></td>
     </tr>
   </table>
   
@@ -116,11 +161,11 @@ group: rest-api
     </tr>
     <tr>
       <td> sample JSON input </td>
-      <td> [Clone JSON sample](rest-json/rest-json-notebook-create.json)</td>
+      <td><pre>{"name": "name of new notebook"}</pre></td>
     </tr>
     <tr>
       <td> sample JSON response </td>
-      <td> [Clone response sample](rest-json/rest-json-notebook-create-response.json) </td>
+      <td><pre>{"status": "CREATED","message": "","body": "2AZPHY918"}</pre></td>
     </tr>
   </table>
   

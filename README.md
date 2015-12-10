@@ -251,3 +251,7 @@ Zeppelin comes with a set of end-to-end acceptance tests driving headless seleni
 
 
 test
+test
+test
+test
+test

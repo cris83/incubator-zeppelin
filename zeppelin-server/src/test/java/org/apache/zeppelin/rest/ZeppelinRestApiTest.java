@@ -18,6 +18,7 @@
 package org.apache.zeppelin.rest;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -155,8 +156,11 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = ZeppelinServer.notebook.createNote();
     note.addParagraph();
     Paragraph p = note.getLastParagraph();
+    Map config = p.getConfig();
+    config.put("enabled", true);
 
     // run markdown paragraph
+    p.setConfig(config);
     p.setText("%md markdown");
     note.run(p.getId());
     while (p.getStatus() != Status.FINISHED) {
@@ -175,6 +179,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
     // run markdown paragraph, again
     p = note.addParagraph();
+    p.setConfig(config);
     p.setText("%md markdown restarted");
     note.run(p.getId());
     while (p.getStatus() != Status.FINISHED) {
@@ -259,9 +264,12 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     LOG.info("testCloneNotebook");
     // Create note to clone
     Note note = ZeppelinServer.notebook.createNote();
-    assertNotNull("cant create new note", note);
+    assertNotNull("can't create new note", note);
     note.setName("source note for clone");
     Paragraph paragraph = note.addParagraph();
+    Map config = paragraph.getConfig();
+    config.put("enabled", true);
+    paragraph.setConfig(config);
     paragraph.setText("%md This is my new paragraph in my new note");
     note.persist();
     String sourceNoteID = note.getId();
@@ -300,5 +308,109 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     get.releaseConnection();
   }
 
+  @Test
+  public void testNoteJobs() throws IOException, InterruptedException {
+    LOG.info("testNoteJobs");
+    // Create note to run test.
+    Note note = ZeppelinServer.notebook.createNote();
+    assertNotNull("can't create new note", note);
+    note.setName("note for run test");
+    Paragraph paragraph = note.addParagraph();
+    
+    Map config = paragraph.getConfig();
+    config.put("enabled", true);
+    paragraph.setConfig(config);
+    
+    paragraph.setText("%md This is test paragraph.");
+    note.persist();
+    String noteID = note.getId();
+
+    note.runAll();
+    // wait until job is finished or timeout.
+    int timeout = 1;
+    while (!paragraph.isTerminated()) {
+      Thread.sleep(1000);
+      if (timeout++ > 10) {
+        LOG.info("testNoteJobs timeout job.");
+        break;
+      }
+    }
+    
+    // Call Run Notebook Jobs REST API
+    PostMethod postNoteJobs = httpPost("/notebook/job/" + noteID, "");
+    assertThat("test notebook jobs run:", postNoteJobs, isAllowed());
+    postNoteJobs.releaseConnection();
+
+    // Call Stop Notebook Jobs REST API
+    DeleteMethod deleteNoteJobs = httpDelete("/notebook/job/" + noteID);
+    assertThat("test notebook stop:", deleteNoteJobs, isAllowed());
+    deleteNoteJobs.releaseConnection();    
+    Thread.sleep(1000);
+    
+    // Call Run paragraph REST API
+    PostMethod postParagraph = httpPost("/notebook/job/" + noteID + "/" + paragraph.getId(), "");
+    assertThat("test paragraph run:", postParagraph, isAllowed());
+    postParagraph.releaseConnection();    
+    Thread.sleep(1000);
+    
+    // Call Stop paragraph REST API
+    DeleteMethod deleteParagraph = httpDelete("/notebook/job/" + noteID + "/" + paragraph.getId());
+    assertThat("test paragraph stop:", deleteParagraph, isAllowed());
+    deleteParagraph.releaseConnection();    
+    Thread.sleep(1000);
+    
+    //cleanup
+    ZeppelinServer.notebook.removeNote(note.getId());
+  }
+  
+  @Test
+  public void testCronJobs() throws InterruptedException, IOException{
+    // create a note and a paragraph
+    Note note = ZeppelinServer.notebook.createNote();
+
+    note.setName("note for run test");
+    Paragraph paragraph = note.addParagraph();
+    paragraph.setText("%md This is test paragraph.");
+    
+    Map config = paragraph.getConfig();
+    config.put("enabled", true);
+    paragraph.setConfig(config);
+
+    note.runAll();
+    // wait until job is finished or timeout.
+    int timeout = 1;
+    while (!paragraph.isTerminated()) {
+      Thread.sleep(1000);
+      if (timeout++ > 10) {
+        LOG.info("testNoteJobs timeout job.");
+        break;
+      }
+    }
+    
+    String jsonRequest = "{\"cron\":\"* * * * * ?\" }";
+    // right cron expression but not exist note.
+    PostMethod postCron = httpPost("/notebook/cron/notexistnote", jsonRequest);
+    assertThat("", postCron, isNotFound());
+    postCron.releaseConnection();
+    
+    // right cron expression.
+    postCron = httpPost("/notebook/cron/" + note.getId(), jsonRequest);
+    assertThat("", postCron, isAllowed());
+    postCron.releaseConnection();
+    Thread.sleep(1000);
+    
+    // wrong cron expression.
+    jsonRequest = "{\"cron\":\"a * * * * ?\" }";
+    postCron = httpPost("/notebook/cron/" + note.getId(), jsonRequest);
+    assertThat("", postCron, isBadRequest());
+    postCron.releaseConnection();
+    Thread.sleep(1000);
+    
+    // remove cron job.
+    DeleteMethod deleteCron = httpDelete("/notebook/cron/" + note.getId());
+    assertThat("", deleteCron, isAllowed());
+    deleteCron.releaseConnection();
+    ZeppelinServer.notebook.removeNote(note.getId());
+  }  
 }
 

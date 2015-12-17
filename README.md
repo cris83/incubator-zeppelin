@@ -229,3 +229,7 @@ Zeppelin comes with a set of end-to-end acceptance tests driving headless seleni
 
 
 ok
+ok
+ok
+ok
+ok

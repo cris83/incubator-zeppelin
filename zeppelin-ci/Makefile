@@ -112,6 +112,7 @@ help:
 	@echo 
 
 env :
+	@echo "$(ZCI_ENV)" > .envfile
 	@build/buildstep.sh envload $(ZCI_YML) $(ZCI_ENV)
 	$(call env_job)
 

@@ -18,4 +18,4 @@ BUILD_JOB:
     1:spark_standalone
     2:none
     3:none
-    4:none
+    4:

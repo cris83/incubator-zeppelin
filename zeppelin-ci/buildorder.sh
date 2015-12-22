@@ -1,4 +1,5 @@
 #!/bin/bash
 
-echo "$repo_url"
+echo "> pr repo url  : $REPO_URL"
+echo "> pr branch    : $BRANCH"
 echo "ok"

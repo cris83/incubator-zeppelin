@@ -17,7 +17,7 @@ SPARK:
 # Set parallel jobs - MAX : 4
 # ----------------------------------------
 BUILD_JOB:
-    5:spark_standalone
+    1:spark_standalone
     2:none
     3:none
     4:none

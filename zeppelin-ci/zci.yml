@@ -22,4 +22,3 @@ BUILD_JOB:
     1:spark_mesos
     2:spark_yarn
     3:none
-    4:none

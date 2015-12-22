@@ -2,7 +2,7 @@
 #  Set Env
 # -----------------------------------------
 IMAGE:
-    VERSION:0.3
+    VERSION:0.4
 
 JDK:
     VERSION:1.7.0
@@ -19,4 +19,7 @@ SPARK:
 #   - Range : 1 ~ 4
 # -----------------------------------------
 BUILD_JOB:
-    1:none
+    1:spark_mesos
+    2:spark_yarn
+    3:none
+    4:none

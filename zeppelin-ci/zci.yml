@@ -13,14 +13,9 @@ HADOOP:
 SPARK:
     VERSION:1.5.2 1.4.1 1.3.1 1.2.1 1.1.1
 
-BUILD_JOB1:
-    spark_standalone
-
-BUILD_JOB2:
-    none
-
-BUILD_JOB3:
-    none
-
-BUILD_JOB4:
-    none
+# parallel
+BUILD_JOB:
+    1:spark_standalone
+    2:none
+    3:none
+    4:none

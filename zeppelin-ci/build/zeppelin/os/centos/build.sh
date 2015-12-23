@@ -25,29 +25,46 @@ function first_build
 	HADOOP_VER=$3
 	SPARK_DAT=spark-$SPARK_VER-bin-hadoop$HADOOP_VER
 
-	mvn package -DskipTests -Phadoop-$HADOOP_VER -Ppyspark -B
-	mvn package -Pbuild-distr -Phadoop-$HADOOP_VER -Ppyspark -B
+	mvn package -DskipTests -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B
+	mvn package -Pbuild-distr -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B
 
 	\cp -f /tmp/zeppelin-env.sh /zeppelin/conf/
 	echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
 	spark_conf "$SPARK_SHARE/$SPARK_DAT"
 
-	mvn verify -Pusing-packaged-distr -Phadoop-$HADOOP_VER -Ppyspark -B
+	mvn verify -Pusing-packaged-distr -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B
 }
 
-function etc_build
+function skiptests_etc_build
 {
 	SPARK_VER=$1
 	SPARK_PRO=$2
 	HADOOP_VER=$3
 	SPARK_DAT=spark-$SPARK_VER-bin-hadoop$HADOOP_VER
 
+    rm -rf /zeppelin/interpreter/spark
 	mvn package -DskipTests -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B -pl 'zeppelin-interpreter,spark-dependencies,spark'
 
 	\cp -f /tmp/zeppelin-env.sh /zeppelin/conf/
 	echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
 	spark_conf "$SPARK_SHARE/$SPARK_DAT"
 
+	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -B -pl 'zeppelin-interpreter,zeppelin-zengine,zeppelin-server' -Dtest=org.apache.zeppelin.rest.*Test -DfailIfNoTests=false
+}
+
+# only 1.2 and 1.1
+function etc_build
+{
+    SPARK_VER=$1
+    SPARK_PRO=$2
+    HADOOP_VER=$3
+    SPARK_DAT=spark-$SPARK_VER-bin-hadoop$HADOOP_VER
+
+    rm -rf /zeppelin/interpreter/spark
+	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B -pl 'zeppelin-interpreter,spark-dependencies,spark'
+
+    \cp -f /tmp/${item}_zeppelin-env.sh /zeppelin/conf/
+    echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
 	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -B -pl 'zeppelin-interpreter,zeppelin-zengine,zeppelin-server' -Dtest=org.apache.zeppelin.rest.*Test -DfailIfNoTests=false
 }
 
@@ -103,7 +120,11 @@ do
 	if [[ $arg_num == 0 ]]; then
 		first_build $SPARK_VERSION $SPARK_PROFILE $HADOOP_PROFILE
 	else
-		etc_build $SPARK_VERSION $SPARK_PROFILE $HADOOP_PROFILE
+		if [[ $SPARK_PROFILE == "1.2" || $SPARK_PROFILE == "1.1" ]]; then
+			etc_build $SPARK_VER $SPARK_PROFILE $HADOOP_PROFILE
+		else
+			skiptests_etc_build $SPARK_VER $SPARK_PROFILE $HADOOP_PROFILE
+		fi
 	fi
 	let "arg_num+=1"
 

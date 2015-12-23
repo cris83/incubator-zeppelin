@@ -38,6 +38,6 @@ RUN chown root.root /etc/bootstrap.sh
 RUN chmod 700 /etc/bootstrap.sh
 
 # open port for spark
-EXPOSE 8080 7077 8888 8081
+EXPOSE 8080 7077 7072 8081 8082
 
 ENTRYPOINT ["/etc/bootstrap.sh"]

@@ -39,7 +39,7 @@ RUN rpm -Uvh http://repos.mesosphere.com/el/6/noarch/RPMS/mesosphere-el-repo-6-2
 RUN yum -y install mesos
 
 # open port for spark
-EXPOSE 8080 7077 8888 8081
+EXPOSE 8080 7077 7072 8081 8082
 
 # open port for mesos
 EXPOSE 5050

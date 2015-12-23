@@ -56,6 +56,8 @@ do
 done
 
 export SPARK_MASTER_PORT=7077
+export SPARK_MASTER_WEBUI_PORT=7072
+export SPARK_WORKER_WEBUI_PORT=8082
 export SPARK_LOCAL_IP=`awk 'NR==1 {print $1}' /etc/hosts`
 
 sed '1d' /etc/hosts > /tmp/hosts

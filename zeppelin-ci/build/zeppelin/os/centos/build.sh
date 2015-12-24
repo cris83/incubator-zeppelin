@@ -32,7 +32,8 @@ function first_build
 	echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
 	spark_conf "$SPARK_SHARE/$SPARK_DAT"
 
-	mvn verify -Pusing-packaged-distr -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B
+	#mvn verify -Pusing-packaged-distr -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B
+	sleep 3
 }
 
 function skiptests_etc_build

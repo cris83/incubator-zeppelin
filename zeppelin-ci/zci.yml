@@ -21,5 +21,5 @@ SPARK:
 BUILD_JOB:
     1:spark_yarn
     2:spark_mesos
-    3:none
+    3:spark_standalone
     4:none

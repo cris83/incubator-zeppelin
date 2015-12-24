@@ -64,7 +64,7 @@ function etc_build
     rm -rf /zeppelin/interpreter/spark
 	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B -pl 'zeppelin-interpreter,spark-dependencies,spark'
 
-    \cp -f /tmp/${item}_zeppelin-env.sh /zeppelin/conf/
+    \cp -f /tmp/zeppelin-env.sh /zeppelin/conf/
     echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
 	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -B -pl 'zeppelin-interpreter,zeppelin-zengine,zeppelin-server' -Dtest=org.apache.zeppelin.rest.*Test -DfailIfNoTests=false
 }

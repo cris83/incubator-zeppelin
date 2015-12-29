@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.zeppelin.rest;
+package org.apache.zeppelin;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Response wrapper.
- */
-@XmlRootElement
-public class NotebookResponse {
-  private String msg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-  public NotebookResponse() {}
+public class ZeppelinITUtils {
 
-  public NotebookResponse(String msg) {
-    this.msg = msg;
+  public final static Logger LOG = LoggerFactory.getLogger(ZeppelinITUtils.class);
+
+  public static void sleep(long millis, boolean logOutput) {
+    if (logOutput) {
+      LOG.info("Starting sleeping for " + (millis / 1000) + " seconds...");
+      LOG.info("Caller: " + Thread.currentThread().getStackTrace()[2]);
+    }
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    if (logOutput) {
+      LOG.info("Finished.");
+    }
   }
 }

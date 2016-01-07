@@ -9,7 +9,7 @@
 # ----------------------------------------------------------------------
 
 LOCALREPO_BIN=$(BUILD_HOME)/build/localrepo/bin
-LOCALREPO_DAT=$(BUILD_HOME)/build/localrepo/dat
+LOCALREPO_DAT=/opt/localrepo
 REPOSHARE_ENV=$(REPOSHARE_PATH)/$(ZCI_ENV)
 CONT_NAME=$(type)_$(name)
 

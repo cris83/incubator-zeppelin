@@ -10,7 +10,7 @@
 
 BUILD_HOME=$(shell pwd)
 LOCALREPO_BIN=$(BUILD_HOME)/build/localrepo/bin
-LOCALREPO_DAT=$(BUILD_HOME)/build/localrepo/dat
+LOCALREPO_DAT=/opt/localrepo
 
 ZCI_ENV_FILE=.zci.env
 ZCI_ENV=$(BUILD_HOME)/$(ZCI_ENV_FILE)

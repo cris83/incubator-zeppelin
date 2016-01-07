@@ -38,7 +38,7 @@ docker_build = \
 	$(LOCALREPO_BIN)/get_confirm_build_dat.sh $(REPOSHARE_ENV) $(LOCALREPO_DAT); \
 	cp build.sh $1; \
 	sed -i -e 's/DOCKER_VAR_OS/$(OS_VERSION)/g' $1/Dockerfile; \
-	docker build --pull=false -t zeppelin-"$1:$(IMAGE_VERSION)" $1/;
+	docker build --pull=false -t "$1:$(IMAGE_VERSION)" $1/;
 
 
 # ----------------------------------------------------------------------

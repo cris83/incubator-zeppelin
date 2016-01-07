@@ -164,8 +164,8 @@ function buildstep_getport
 
 function buildstep_getlink
 {
-	source $1
-	CONT=$2
+	source $2
+	CONT=$3
 
 	link_item=""
 	IFS=' '

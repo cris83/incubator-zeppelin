@@ -8,8 +8,8 @@
 # - Define Varialbes 
 # ----------------------------------------------------------------------
 
-LOCALREPO_BIN=$(BUILD_HOME)/build/localrepo/bin
 LOCALREPO_DAT=/opt/localrepo
+LOCALREPO_BIN=$(BUILD_HOME)/build/localrepo/bin
 REPOSHARE_ENV=$(REPOSHARE_PATH)/$(ZCI_ENV)
 
 GET_RND_PORT=`$(BUILD_HOME)/build/buildstep.sh getport`
@@ -81,7 +81,6 @@ run :
 	-e BRANCH=$(BRANCH) \
 	-e REPO=$(REPO) \
 	-e ZCI_ENV=$(ZCI_ENV) \
-	-e BUILD_TYPE=$(type) \
 	-e CONT_NAME=$(BACKEND_CONTAINER_NAME) \
 	-p $(ZEPPELIN_HOST_PORT_STANDALONE):$(ZEPPELIN_PORT) \
 	-p $(ZEPPELIN_HOST_WEBSOCKET_PORT_STANDALONE):$(ZEPPELIN_WEBSOCKET_PORT) \

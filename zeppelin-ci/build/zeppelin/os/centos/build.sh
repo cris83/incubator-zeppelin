@@ -1,9 +1,8 @@
 #!/bin/bash
 set -e
-SPARK_SHARE=/reposhare/$BUILD_TYPE
-
 echo "# ZCI-ENV FILE : $ZCI_ENV"
 source /reposhare/$ZCI_ENV
+SPARK_SHARE=/reposhare
 
 # ----------------------------------------------------------------------
 # Functions
@@ -31,8 +30,8 @@ function first_build_only_spark
 	mvn package -Pbuild-distr -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -Pscalding -B
 
 	\cp -f /tmp/${ITEM}_zeppelin-env.sh /zeppelin/conf/
-	echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
-	spark_yarn_conf "$SPARK_SHARE/$SPARK_DAT" $ITEM
+	echo "export SPARK_HOME=$SPARK_SHARE/$ITEM/$SPARK_DAT" >> conf/zeppelin-env.sh
+	spark_yarn_conf "$SPARK_SHARE/$ITEM/$SPARK_DAT" $ITEM
 
 	#sleep 3
 	mvn verify -Drat.skip=true -Pusing-packaged-distr -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -Pscalding -B
@@ -53,8 +52,8 @@ function first_build
 	mvn package -Pbuild-distr -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -Pscalding -B
 
 	\cp -f /tmp/${ITEM}_zeppelin-env.sh /zeppelin/conf/
-	echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
-	spark_yarn_conf "$SPARK_SHARE/$SPARK_DAT" $ITEM
+	echo "export SPARK_HOME=$SPARK_SHARE/$ITEM/$SPARK_DAT" >> conf/zeppelin-env.sh
+	spark_yarn_conf "$SPARK_SHARE/$ITEM/$SPARK_DAT" $ITEM
 
 	#sleep 3
 	mvn verify -Drat.skip=true -Pusing-packaged-distr -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -Pscalding -B
@@ -72,8 +71,8 @@ function skiptests_etc_build
 	mvn package -DskipTests -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B -pl 'zeppelin-interpreter,spark-dependencies,spark'
 
 	\cp -f /tmp/${ITEM}_zeppelin-env.sh /zeppelin/conf/
-	echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
-	spark_yarn_conf "$SPARK_SHARE/$SPARK_DAT" $ITEM
+	echo "export SPARK_HOME=$SPARK_SHARE/$ITEM/$SPARK_DAT" >> conf/zeppelin-env.sh
+	spark_yarn_conf "$SPARK_SHARE/$ITEM/$SPARK_DAT" $ITEM
 
 	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -B -pl 'zeppelin-interpreter,zeppelin-zengine,zeppelin-server' -Dtest=org.apache.zeppelin.rest.*Test -DfailIfNoTests=false
 }
@@ -91,8 +90,8 @@ function etc_build
 	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B -pl 'zeppelin-interpreter,spark-dependencies,spark'
 
 	\cp -f /tmp/${ITEM}_zeppelin-env.sh /zeppelin/conf/
-	echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
-	spark_yarn_conf "$SPARK_SHARE/$SPARK_DAT" $ITEM
+	echo "export SPARK_HOME=$SPARK_SHARE/$ITEM/$SPARK_DAT" >> conf/zeppelin-env.sh
+	spark_yarn_conf "$SPARK_SHARE/$ITEM/$SPARK_DAT" $ITEM
 
 	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -B -pl 'zeppelin-interpreter,zeppelin-zengine,zeppelin-server' -Dtest=org.apache.zeppelin.rest.*Test -DfailIfNoTests=false
 }

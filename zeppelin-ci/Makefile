@@ -13,6 +13,7 @@ LOCALREPO_BIN=$(BUILD_HOME)/build/localrepo/bin
 LOCALREPO_DAT=/opt/localrepo
 
 ZCI_ENV_FILE=.zci.env
+USER_ZCI_ENV=$(ZCI_ENV_FILE).$(userhome)
 ZCI_ENV=$(BUILD_HOME)/$(ZCI_ENV_FILE)
 ZCI_YML=$(BUILD_HOME)/zci.yml
 
@@ -29,7 +30,7 @@ INTERPRETER_BUILD_DIR=$(BUILD_DIR)/backends
 
 setup_comm = \
 	mkdir -p $(REPOSHARE_DIR); \
-	cp -f $(ZCI_ENV) $(REPOSHARE_DIR)
+	cp -f $(ZCI_ENV) $(REPOSHARE_DIR)/$(USER_ZCI_ENV)
 
 setup_back = \
 	$(call setup_comm); \
@@ -67,7 +68,7 @@ run_job =  \
 						BRANCH=$(BRANCH) \
 						BUILD_HOME=$(BUILD_HOME) \
 						BUILD_PATH=$$t \
-						ZCI_ENV=$(ZCI_ENV_FILE) \
+						ZCI_ENV=$(USER_ZCI_ENV) \
 						REPOSHARE_PATH=$(REPOSHARE_DIR); \
 					$(BUILD_HOME)/build/buildstep.sh putres $(REPOSHARE_DIR) $(name) $$?; \
 			  	fi; \

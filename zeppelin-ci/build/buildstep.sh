@@ -162,6 +162,23 @@ function buildstep_getport
 	done
 }
 
+function buildstep_getlink
+{
+	source $1
+	CONT=$2
+
+	link_item=""
+	IFS=' '
+	read -r -a items <<< "$BUILD_ITEMS"
+
+	for ITEM in ${items[@]}
+	do
+	    link_item=${link_item}"--link ${ITEM}_${CONT}:${ITEM} "
+	done
+
+	echo $link_item
+}
+
 
 function buildstep
 {
@@ -188,6 +205,9 @@ function buildstep
 			;;
 		getport)
 			buildstep_getport $*
+			;;
+		getlink)
+			buildstep_getlink $*
 			;;
 		*)
 			echo "- buildstep : $1 is invalid command"

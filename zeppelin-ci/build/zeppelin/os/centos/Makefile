@@ -8,14 +8,14 @@
 # - Define Varialbes 
 # ----------------------------------------------------------------------
 
+OS_VERSION=centos:centos6
 LOCALREPO_DAT=/opt/localrepo
 LOCALREPO_BIN=$(BUILD_HOME)/build/localrepo/bin
 REPOSHARE_ENV=$(REPOSHARE_PATH)/$(ZCI_ENV)
-
-GET_RND_PORT=`$(BUILD_HOME)/build/buildstep.sh getport`
 BACKEND_CONTAINER_NAME=$(name)
 
-OS_VERSION=centos:centos6
+GET_RND_PORT=`$(BUILD_HOME)/build/buildstep.sh getport`
+GET_OPT_LINK=`$(BUILD_HOME)/build/buildstep.sh getlink $(REPOSHARE_ENV) $(name)`
 
 
 # ----------------------------------------------------------------------
@@ -68,7 +68,7 @@ build :
 	$(call docker_build,$(type))
 	
 run : 
-	@if [ -z $(type) ]; then \
+	if [ -z $(type) ]; then \
 		echo "Type \"make help\" to run. please..";\
 		exit 1; \
 	fi; \
@@ -84,9 +84,7 @@ run :
 	-e CONT_NAME=$(BACKEND_CONTAINER_NAME) \
 	-p $(ZEPPELIN_HOST_PORT_STANDALONE):$(ZEPPELIN_PORT) \
 	-p $(ZEPPELIN_HOST_WEBSOCKET_PORT_STANDALONE):$(ZEPPELIN_WEBSOCKET_PORT) \
-	--link spark_standalone_$(BACKEND_CONTAINER_NAME):spark_standalone \
-	--link spark_mesos_$(BACKEND_CONTAINER_NAME):spark_mesos \
-	--link spark_yarn_$(BACKEND_CONTAINER_NAME):spark_yarn \
+	$(GET_OPT_LINK) \
 	$(type):$(IMAGE_VERSION) /bin/bash;
 
 

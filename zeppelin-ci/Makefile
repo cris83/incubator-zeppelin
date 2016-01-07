@@ -16,10 +16,11 @@ ZCI_ENV_FILE=.zci.env
 ZCI_ENV=$(BUILD_HOME)/$(ZCI_ENV_FILE)
 ZCI_YML=$(BUILD_HOME)/zci.yml
 
-BUILD_DIR=/tmp/build/build/
 REPOSHARE_DIR=/tmp/build/reposhare
-ZEPPELIN_BUILD_DIR=/tmp/build/build/zeppelin
-INTERPRETER_BUILD_DIR=/tmp/build/build/backends
+
+BUILD_DIR=/tmp/build/$(userhome)
+ZEPPELIN_BUILD_DIR=$(BUILD_DIR)/zeppelin
+INTERPRETER_BUILD_DIR=$(BUILD_DIR)/backends
 
 
 # -----------------------------------------------------------------------------

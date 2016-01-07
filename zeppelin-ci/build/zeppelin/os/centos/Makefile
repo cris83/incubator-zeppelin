@@ -88,7 +88,7 @@ run :
 	--link spark_standalone_$(BACKEND_CONTAINER_NAME):spark_standalone \
 	--link spark_mesos_$(BACKEND_CONTAINER_NAME):spark_mesos \
 	--link spark_yarn_$(BACKEND_CONTAINER_NAME):spark_yarn \
-	zeppelin-$(type):$(IMAGE_VERSION) /bin/bash;
+	$(type):$(IMAGE_VERSION) /bin/bash;
 
 
 # ----------------------------------------------------------------------

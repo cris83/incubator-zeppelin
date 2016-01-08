@@ -15,4 +15,4 @@ SPARK:
 #   VERSION:1.5.2 1.1.1
 
 BUILD:
-    ITEMS:spark_standalone spark_mesos spark_yarn new_items
+    ITEMS:spark_standalone spark_mesos spark_yarn

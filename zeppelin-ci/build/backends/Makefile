@@ -133,7 +133,7 @@ run :
 		-p $(GET_RND_PORT):$(HDFS_DN_COMMAND_PORT) \
 		-p $(GET_RND_PORT):$(HDFS_DN_HTTP_PORT) \
 		-p $(GET_RND_PORT):$(HDFS_NN_HTTP_PORT) \
-		xxxx:$(IMAGE_VERSION) /bin/bash; \
+		$(type):$(IMAGE_VERSION) /bin/bash; \
 		\
 	elif [ $(type) = "spark_mesos" ]; then\
 		docker run -id \

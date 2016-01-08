@@ -15,5 +15,4 @@ SPARK:
 #   VERSION:1.5.2 1.1.1
 
 BUILD:
-    ITEMS:spark_a
-#   ITEMS:spark_standalone
+    ITEMS:spark_standalone

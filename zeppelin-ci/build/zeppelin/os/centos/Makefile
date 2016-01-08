@@ -69,7 +69,7 @@ build :
 	$(call docker_build,$(type))
 	
 run : 
-	if [ -z $(type) ]; then \
+	@if [ -z $(type) ]; then \
 		echo "Type \"make help\" to run. please..";\
 		exit 1; \
 	fi; \

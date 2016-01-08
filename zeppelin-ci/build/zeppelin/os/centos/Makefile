@@ -19,13 +19,14 @@ GET_OPT_LINK=`$(BUILD_HOME)/build/buildstep.sh getlink $(REPOSHARE_ENV) $(name)`
 
 
 # ----------------------------------------------------------------------
-# - Host Port
+# - Host Port & Backend Links
 # ----------------------------------------------------------------------
 
 ZEPPELIN_PORT 							= 8080
 ZEPPELIN_WEBSOCKET_PORT 				= 8081
 ZEPPELIN_HOST_PORT_STANDALONE 			= $(GET_RND_PORT)
 ZEPPELIN_HOST_WEBSOCKET_PORT_STANDALONE = $(GET_RND_PORT)
+ZEPPELIN_DOCKER_LINK					= $(GET_OPT_LINK)
 
 
 # ----------------------------------------------------------------------
@@ -73,8 +74,9 @@ run :
 		exit 1; \
 	fi; \
 	\
-	echo "# Run spark standalone mode zeppelin! "; \
-	echo "# Host Port : $(ZEPPELIN_HOST_PORT_STANDALONE) , $(ZEPPELIN_HOST_WEBSOCKET_PORT_STANDALONE)"; \
+	echo "# Run zeppelin build! "; \
+	echo "# Host Port   : $(ZEPPELIN_HOST_PORT_STANDALONE) , $(ZEPPELIN_HOST_WEBSOCKET_PORT_STANDALONE)"; \
+	echo "# Docker Link : $(ZEPPELIN_DOCKER_LINK)"; \
 	\
 	docker run --rm -i \
 	-v $(REPOSHARE_PATH):/reposhare \
@@ -84,7 +86,7 @@ run :
 	-e CONT_NAME=$(BACKEND_CONTAINER_NAME) \
 	-p $(ZEPPELIN_HOST_PORT_STANDALONE):$(ZEPPELIN_PORT) \
 	-p $(ZEPPELIN_HOST_WEBSOCKET_PORT_STANDALONE):$(ZEPPELIN_WEBSOCKET_PORT) \
-	$(GET_OPT_LINK) \
+	$(ZEPPELIN_DOCKER_LINK) \
 	$(type):$(IMAGE_VERSION) /bin/bash;
 
 

@@ -16,12 +16,6 @@ unzip \
 && \
 yum clean all
 
-# set java home
-#java-1.7.0-openjdk \
-#java-1.7.0-openjdk-devel \
-#ENV JAVA_HOME /etc/alternatives/jre_openjdk/
-#ENV PATH $PATH:$JAVA_HOME/bin
-
 # remove old jdk
 RUN yum remove java; yum remove jdk
 
@@ -29,7 +23,6 @@ RUN yum remove java; yum remove jdk
 RUN wget --continue --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" -O jdk-linux-x64.rpm "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-x64.rpm"
 RUN rpm -Uvh jdk-linux-x64.rpm
 RUN rm jdk-linux-x64.rpm
-
 ENV JAVA_HOME /usr/java/default
 ENV PATH $PATH:$JAVA_HOME/bin
 
@@ -40,9 +33,6 @@ RUN tar xzf /tmp/apache-maven-$MAVEN_VERSION-bin.tar.gz -C /usr/share \
   && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 ENV MAVEN_HOME /usr/share/maven
 COPY maven-settings.xml /usr/share/maven/conf/settings.xml
-
-# Py4j for PySpark
-RUN easy_install py4j
 
 # fake display with firefox 
 ENV DISPLAY :99
@@ -60,18 +50,21 @@ ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/firefox:/usr/lib:/usr/local/lib:
 RUN yum install -y alsa-lib.x86_64
 RUN yum install -y libmozalloc.so
 
+# Py4j for PySpark
+RUN easy_install py4j
+
 # install mesos
 RUN rpm -Uvh http://repos.mesosphere.com/el/6/noarch/RPMS/mesosphere-el-repo-6-2.noarch.rpm
 RUN yum -y install mesos
+
+# copy spark config for yarn
+RUN mkdir -p /tmp/spark_conf
+COPY conf/* /tmp/spark_conf/
 
 # copy zeppelin config.
 COPY spark_standalone_zeppelin-env.sh /tmp/
 COPY spark_mesos_zeppelin-env.sh /tmp/
 COPY spark_yarn_zeppelin-env.sh /tmp/
-
-# copy spark config for yarn
-RUN mkdir -p /tmp/spark_conf
-COPY conf/* /tmp/spark_conf/
 
 # update reposhare
 RUN mkdir -p /reposhare

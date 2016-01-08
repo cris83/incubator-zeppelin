@@ -75,7 +75,6 @@ run_job =  \
 			  fi; \
 			); done \
 		fi; \
-	/bin/echo " "; \
 	); done	
 
 
@@ -155,6 +154,7 @@ run : env
 
 clean :
 	@rm -rf $(REPOSHARE_DIR)
+
 
 # -----------------------------------------------------------------------------
 # - End of File

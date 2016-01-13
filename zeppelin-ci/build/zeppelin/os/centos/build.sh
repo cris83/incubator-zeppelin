@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 SPARK_SHARE=/reposhare/$BUILD_TYPE
+BUILD_HOME=/reposhare/$BUILD_TYPE/user/$CONT_NAME
+ZEPPELIN_HOME=/zeppelin
 
 echo "# ZCI-ENV FILE : $ZCI_ENV"
 source /reposhare/$ZCI_ENV
@@ -32,7 +34,7 @@ function first_build
 	echo "- Done : mvn package build-distr spark-$SPARK_PRO, hadoop-$HADOOP_VER"
 
 	echo "- Build mvn package with spark-$SPARK_PRO, hadoop-$HADOOP_VER"
-	\cp -f /tmp/zeppelin-env.sh /zeppelin/conf/
+	\cp -f /tmp/zeppelin-env.sh ${ZEPPELIN_HOME}/conf/
 	echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
 	spark_conf "$SPARK_SHARE/$SPARK_DAT"
 
@@ -48,11 +50,13 @@ function skiptests_etc_build
 	SPARK_DAT=spark-$SPARK_VER-bin-hadoop$HADOOP_VER
 
 	echo "- Build mvn package with skipTests"
-    rm -rf /zeppelin/interpreter/spark
+    #rm -rf /zeppelin/interpreter/spark
+    rm -rf ${ZEPPELIN_HOME}/interpreter/spark
 	mvn package -DskipTests -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B -pl 'zeppelin-interpreter,spark-dependencies,spark'
 
 	echo "- Build mvn package with spark-$SPARK_PRO, hadoop-$HADOOP_VER"
-	\cp -f /tmp/zeppelin-env.sh /zeppelin/conf/
+	#\cp -f /tmp/zeppelin-env.sh /zeppelin/conf/
+	\cp -f /tmp/zeppelin-env.sh ${ZEPPELIN_HOME}/conf/
 	echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
 	spark_conf "$SPARK_SHARE/$SPARK_DAT"
 
@@ -68,11 +72,13 @@ function etc_build
     SPARK_DAT=spark-$SPARK_VER-bin-hadoop$HADOOP_VER
 
 	echo "- Build mvn package without skipTests"
-    rm -rf /zeppelin/interpreter/spark
+    #rm -rf /zeppelin/interpreter/spark
+    rm -rf ${ZEPPELIN_HOME}/interpreter/spark
 	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -Ppyspark -B -pl 'zeppelin-interpreter,spark-dependencies,spark'
 
 	echo "- Build mvn package with spark-$SPARK_PRO, hadoop-$HADOOP_VER"
-    \cp -f /tmp/zeppelin-env.sh /zeppelin/conf/
+    #\cp -f /tmp/zeppelin-env.sh /zeppelin/conf/
+	\cp -f /tmp/zeppelin-env.sh ${ZEPPELIN_HOME}/conf/
     echo "export SPARK_HOME=$SPARK_SHARE/$SPARK_DAT" >> conf/zeppelin-env.sh
 	mvn package -Pspark-$SPARK_PRO -Phadoop-$HADOOP_VER -B -pl 'zeppelin-interpreter,zeppelin-zengine,zeppelin-server' -Dtest=org.apache.zeppelin.rest.*Test -DfailIfNoTests=false
 }
@@ -106,8 +112,12 @@ Xvfb $DISPLAY -ac -screen 0 1280x1024x24 &
 # Cloning zeppelin
 # ----------------------------------------------------------------------
 /buildstep.sh log $BUILDSTEP_ZEP "- $BUILDSTEP_ZEP : Info, Cloning zeppelin"
-git clone -b $BRANCH $REPO /zeppelin
-cd /zeppelin
+#git clone -b $BRANCH $REPO /zeppelin
+#cd /zeppelin
+#git clone -b $BRANCH $REPO ${BUILD_HOME}/zeppelin
+#cd ${BUILD_HOME}/zeppelin
+git clone --depth 1 -b $BRANCH $REPO $ZEPPELIN_HOME
+cd $ZEPPELIN_HOME
 
 
 # ----------------------------------------------------------------------
@@ -142,6 +152,8 @@ do
 	/buildstep.sh log $BUILDSTEP_ZEP "- $BUILDSTEP_ZEP : wait for backend - spark $SPARK_VERSION"
 	/buildstep.sh waitfor $BUILDSTEP_BAK "- $BUILDSTEP_BAK : closed $BUILD_TYPE backend spark $SPARK_VERSION"
 done
+
+rm -rf $BUILD_HOME
 echo "Done!"
 
 

@@ -54,7 +54,6 @@ RUN yum install -y alsa-lib.x86_64
 RUN yum install -y libmozalloc.so
 
 # install mesos
-RUN date
 RUN rpm -Uvh http://repos.mesosphere.com/el/6/noarch/RPMS/mesosphere-el-repo-6-2.noarch.rpm
 RUN yum -y install mesos
 

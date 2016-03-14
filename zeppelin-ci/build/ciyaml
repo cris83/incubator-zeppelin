@@ -1,9 +1,10 @@
 #!/bin/bash
+source /etc/profile
 # --------------------------------------------------------------------
 # define static variable
 # --------------------------------------------------------------------
 IFS=' '
-EXE="/usr/local/bin/shyaml"
+EXE="shyaml"
 base_path="build/conf"
 yaml_file="zci.yml"
 all_of_orders="${base_path}/.all_of_orders"

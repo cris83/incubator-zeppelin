@@ -1,0 +1,204 @@
+#!/bin/bash
+# --------------------------------------------------------------------
+# define static variable
+# --------------------------------------------------------------------
+IFS=' '
+EXE="/usr/local/bin/shyaml"
+base_path="build/conf"
+yaml_file="zci.yml"
+all_of_orders="${base_path}/.all_of_orders"
+
+# --------------------------------------------------------------------
+# order
+# --------------------------------------------------------------------
+function parse_order
+{
+	let n=0; while true
+	do
+		id=`cat $yaml_file | $EXE get-value order.${n}.id 2>&1`
+		ret=`echo $id | awk '{print $1}'`
+		if [[ $ret == "Error:" ]]; then
+			echo $order_all > $all_of_orders
+			break
+		fi
+
+		jdk=`cat $yaml_file | $EXE get-value order.${n}.jdk 2>&1`
+		ret=`echo $jdk | awk '{print $1}'`
+		if [[ $ret == "Error:" ]]; then
+			echo $order_all > $all_of_orders
+			break
+		fi
+
+		mkdir -p ${base_path}/${id}
+		order_id="${base_path}/${id}/.${id}.env"
+		echo "export image_ver=\"${image_ver}\"" > $order_id
+		echo "export id=\"${id}\"" >> $order_id
+		echo "export jdk=\"${jdk}\"" >> $order_id
+
+		cat $yaml_file | $EXE key-values order.${n}.env | while read key
+		do
+			read val
+			echo "export ${key}=\"${val}\"" >> $order_id
+		done
+
+		let n+=1
+		order_all="$order_all $id"
+	done
+}
+
+# --------------------------------------------------------------------
+# jobs
+# --------------------------------------------------------------------
+function parse_jobs_sparkver
+{
+	if [[ ${1} == "none" ]]; then
+		echo ${#TEMP}
+		return
+	fi
+
+	envpath="${base_path}/${1}"
+	baseenv="${envpath}/.${1}.env"
+
+	source $baseenv
+	local let cnt=$3
+	local let all=$4
+    PROFILE_ORI=$PROFILE
+
+    read -r -a SPARK_VERS <<< "$SPARK_VER"
+    for version in "${SPARK_VERS[@]}"
+    do
+        SPARK_VER=$version
+        SPARK_PRO=${SPARK_VER%.*}
+        PROFILE=`echo $PROFILE_ORI | sed "s/(SPARK_VERSION)/$SPARK_PRO/"`
+
+		envname="${1}-${SPARK_VER}.env"
+		envfile="${envpath}/${envname}"
+		\cp -f $baseenv $envfile
+
+		sed -i -e '/export SPARK_VER=/d' ${envfile}
+		sed -i -e '/export PROFILE=/d' ${envfile}
+
+		echo "export SPARK_VER=\"${SPARK_VER}\"" >> ${envfile}
+		echo "export PROFILE=\"${PROFILE}\"" >> ${envfile}
+
+		let cnt+=1
+
+		if [[ $all == 0 ]]; then
+			#echo "order_${cnt}=${envfile}" >> $2
+			echo "order_${cnt}=${1}/${envname}" >> $2
+		else
+			#echo "order_all_${cnt}=${envfile}" >> $2
+			echo "order_all_${cnt}=${1}/${envname}" >> $2
+		fi
+
+		echo "build_name_${cnt}=${1} spark-${SPARK_VER} hadoop-${HADOOP_VER}" >> $2
+    done
+	echo ${#SPARK_VERS[@]}
+}
+
+function parse_jobs
+{
+	job_path="${base_path}/properties"
+	mkdir -p ${job_path}
+
+	let n=0; while true
+	do
+		id=`cat $yaml_file | $EXE get-value jobs.${n}.id 2>&1`
+		ret=`echo $id | awk '{print $1}'`
+		if [[ $ret == "Error:" ]]; then
+			break
+		fi
+
+		let num=$n+1
+		properties="job${num}.properties"
+		job="${job_path}/${properties}"
+
+		jobenv="${job_path}/.job${num}.env"
+		echo -n "" > $jobenv
+
+		# Image
+		image_ver=`cat $yaml_file | $EXE get-value image.ver 2>&1`
+		echo "image_version=${image_ver}" > $job
+		echo "export IMAGE_VERSION=${image_ver}" > ${base_path}/.zci.env
+
+		# Job Compose
+		cat $yaml_file | $EXE key-values jobs.${n} | while read key
+		do
+			read val
+			echo "${key}=${val}" >> $job
+			echo "export ${key}=\"${val}\"" >> $jobenv
+
+			let cnt=0
+
+			# Set orders
+			if [[ ${key} == "orders" && ${val} != "all" ]]; then
+				read -r -a VAL <<< "$val"
+				for i in "${VAL[@]}"
+				do
+					let cnt+=$(parse_jobs_sparkver $i $job $cnt 0)
+				done
+				echo "order_count=${cnt}" >> $job
+
+			# Set order_all
+			elif [[ ${key} == "orders" && ${val} == "all" ]]; then
+				read data < $all_of_orders
+				echo "order_all=${data}" >> $job
+				echo "export order_all=\"${data}\"" >> $jobenv
+
+				read -r -a VAL <<< "$data"
+				for i in "${VAL[@]}"
+				do
+					let cnt+=$(parse_jobs_sparkver $i $job $cnt 1)
+				done
+				echo "order_all_count=${cnt}" >> $job
+			fi
+		done
+
+		let n+=1
+	done
+}
+
+# --------------------------------------------------------------------
+# etc
+# --------------------------------------------------------------------
+function parse_etc
+{
+	# install
+	echo "#!/bin/bash" > ${base_path}/install.sh
+	echo "set -e" >> ${base_path}/install.sh
+	cat $yaml_file | $EXE get-values install >> ${base_path}/install.sh
+	chmod +x ${base_path}/install.sh
+
+	# script
+	echo "#!/bin/bash" > ${base_path}/script.sh
+	echo "set -e" >> ${base_path}/script.sh
+	cat $yaml_file | $EXE get-values script >> ${base_path}/script.sh
+	chmod +x ${base_path}/script.sh
+
+	# failure
+	echo "#!/bin/bash" > ${base_path}/failure.sh
+	cat $yaml_file | $EXE get-values failure >> ${base_path}/failure.sh
+	chmod +x ${base_path}/failure.sh
+}
+
+function ciyaml_main
+{
+    if [ ! -f $yaml_file ]; then
+        echo "- ciyaml: no such file($yaml_file)"
+        exit 1
+    fi
+
+    # function call
+    parse_order
+    parse_jobs
+    parse_etc
+}
+
+# --------------------------------------------------------------------
+# main
+# --------------------------------------------------------------------
+ciyaml_main
+
+# --------------------------------------------------------------------
+# end of file
+# --------------------------------------------------------------------

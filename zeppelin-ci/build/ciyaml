@@ -17,18 +17,27 @@ function parse_order
 	let n=0; while true
 	do
 		id=`cat $yaml_file | $EXE get-value order.${n}.id 2>&1`
-		ret=`echo $id | awk '{print $1}'`
-		if [[ $ret == "Error:" ]]; then
+		if echo $id | grep -q "Error:"; then
 			echo $order_all > $all_of_orders
 			break
 		fi
+		#ret=`echo $id | awk '{print $1}'`
+		#if [[ $ret == "Error:" ]]; then
+		#	echo $order_all > $all_of_orders
+		#	break
+		#fi
 
 		jdk=`cat $yaml_file | $EXE get-value order.${n}.jdk 2>&1`
-		ret=`echo $jdk | awk '{print $1}'`
-		if [[ $ret == "Error:" ]]; then
+		if echo $jdk | grep -q "Error:"; then
 			echo $order_all > $all_of_orders
 			break
 		fi
+		#ret=`echo $jdk | awk '{print $1}'`
+		#echo "> debug > $ret"
+		#if [[ $ret == "Error:" ]]; then
+		#	echo $order_all > $all_of_orders
+		#	break
+		#fi
 
 		mkdir -p ${base_path}/${id}
 		order_id="${base_path}/${id}/.${id}.env"
@@ -105,10 +114,13 @@ function parse_jobs
 	let n=0; while true
 	do
 		id=`cat $yaml_file | $EXE get-value jobs.${n}.id 2>&1`
-		ret=`echo $id | awk '{print $1}'`
-		if [[ $ret == "Error:" ]]; then
+		if echo $id | grep -q "Error:"; then
 			break
 		fi
+		#ret=`echo $id | awk '{print $1}'`
+		#if [[ $ret == "Error:" ]]; then
+		#	break
+		#fi
 
 		let num=$n+1
 		properties="job${num}.properties"

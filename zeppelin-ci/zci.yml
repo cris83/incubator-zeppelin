@@ -1,0 +1,97 @@
+###########################################################################
+#
+#  ZCI Build Order
+#
+###########################################################################
+image:
+    ver: 0.7
+
+
+order:
+    - id : all-modules  
+      jdk: oraclejdk7
+      env:
+        SPARK_VER: 1.6.0
+        HADOOP_VER: 2.3
+        PROFILE: -Pspark-(SPARK_VERSION) -Phadoop-2.3 -Pscalding
+        BUILD_FLAG: package -Pbuild-distr
+        TEST_FLAG: verify -Drat.skip=true -Pusing-packaged-distr
+        TEST_PROJECTS: ""
+        MAVEN_FLAG: -s /reposhare/conf/maven-settings.xml -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
+
+    - id : spark-modules
+      jdk: oraclejdk7
+      env:
+        SPARK_VER: 1.5.2 1.4.1 1.3.1 1.2.2 1.1.1
+        HADOOP_VER: 2.3
+        PROFILE: -Pspark-(SPARK_VERSION) -Phadoop-2.3 -Ppyspark
+        BUILD_FLAG: package -DskipTests
+        TEST_FLAG: verify -Drat.skip=true
+        TEST_PROJECTS: -pl zeppelin-interpreter,zeppelin-zengine,zeppelin-server,zeppelin-display,spark-dependencies,spark -Dtest=org.apache.zeppelin.rest.*Test,org.apache.zeppelin.spark* -DfailIfNoTests=false 
+        MAVEN_FLAG: -s /reposhare/conf/maven-settings.xml -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
+
+    - id : test-selenium
+      jdk: oraclejdk7
+      env:
+        SPARK_VER: 1.6.0
+        HADOOP_VER: 2.3
+        PROFILE: -Pspark-(SPARK_VERSION) -Phadoop-2.3 -Ppyspark
+        BUILD_FLAG: package -DskipTests
+        TEST_FLAG: verify -Drat.skip=true
+        TEST_PROJECTS: -pl zeppelin-interpreter,zeppelin-zengine,zeppelin-server,zeppelin-display,spark-dependencies,spark -Dtest=org.apache.zeppelin.rest.*Test,org.apache.zeppelin.spark* -DfailIfNoTests=false 
+        MAVEN_FLAG: -s /reposhare/conf/maven-settings.xml -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
+
+
+install:
+    - echo "# install started."
+    - mvn $MAVEN_FLAG $BUILD_FLAG $PROFILE -B
+    - echo "# install completed."
+
+
+script:
+    - echo "# script started."
+    - mvn $MAVEN_FLAG $TEST_FLAG $PROFILE -B $TEST_PROJECTS
+    - echo "# script completed."
+
+
+failure:
+    - cat target/rat.txt
+    - cat zeppelin-server/target/rat.txt
+    - cat zeppelin-distribution/target/zeppelin-*-SNAPSHOT/zeppelin-*-SNAPSHOT/logs/zeppelin*.log
+    - cat zeppelin-distribution/target/zeppelin-*-SNAPSHOT/zeppelin-*-SNAPSHOT/logs/zeppelin*.out
+
+
+# -------------------------------------------------------------------------
+#
+#  * Set parallel jobs ( with Jenkins )
+#   - Desc 
+#     > Job ID Range : 1 ~ 3
+#     > Job ID Max   : 3 
+#
+#   - Param
+#     > id    : id is jenkins-job number
+#     > order : [all] or [none] or [order.id]
+#     > item  : image name
+#     > retry : Retry number of failed job of build step.
+#   
+# -------------------------------------------------------------------------
+jobs:
+    - id: 1
+      item: spark_standalone
+      orders: none
+      retry: 3
+
+    - id: 2
+      item: spark_mesos
+      orders: all
+      retry: 3
+
+    - id: 3
+      item: spark_yarn
+      orders: all
+      retry: 3
+
+
+# -------------------------------------------------------------------------
+# End of File
+# -------------------------------------------------------------------------

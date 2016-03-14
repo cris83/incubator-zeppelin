@@ -78,7 +78,7 @@ failure:
 jobs:
     - id: 1
       item: spark_standalone
-      orders: all
+      orders: none
       retry: 3
 
     - id: 2
